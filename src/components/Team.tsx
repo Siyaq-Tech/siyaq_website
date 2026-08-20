@@ -89,7 +89,7 @@ const members: TeamMember[] = [
     avatar: '/avatar_mohammed.png',
     initials: 'MT',
     github: 'https://github.com/mohammedtarek245',
-    linkedin: 'www.linkedin.com/in/mohammed-tarek-67b822254',
+    linkedin: 'https://www.linkedin.com/in/mohammed-tarek-67b822254/',
     accent: '#dcdcdc',
   },
   {
@@ -101,7 +101,7 @@ const members: TeamMember[] = [
     avatar: '/avatar_mohamed.png',
     initials: 'MO',
     github: 'https://github.com/mohamedusamasmm-pixel',
-    linkedin: 'www.linkedin.com/in/mohamed-usama-mediabuying',
+    linkedin: 'https://www.linkedin.com/in/mohamed-usama-mediabuying/',
     accent: '#e8e8e8',
   },
   {
