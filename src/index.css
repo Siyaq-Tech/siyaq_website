@@ -3,6 +3,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -30,14 +31,171 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f9f9f9; 
+  background: #f9f9f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db; 
+  background: #d1d5db;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af; 
+  background: #9ca3af;
 }
+
+/* ─── Marquee animations ──────────────────────────────────────── */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-reverse {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 28s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track-reverse {
+  display: flex;
+  width: max-content;
+  animation: marquee-reverse 32s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track:hover,
+.marquee-track-reverse:hover {
+  animation-play-state: paused;
+}
+
+/* ─── 3D Card flip ────────────────────────────────────────────── */
+.card-3d-scene {
+  perspective: 900px;
+}
+
+.card-3d-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.card-3d-scene:hover .card-3d-inner {
+  transform: rotateY(180deg);
+}
+
+.card-3d-front,
+.card-3d-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: inherit;
+}
+
+.card-3d-back {
+  transform: rotateY(180deg);
+}
+
+/* ─── Floating orb animations ─────────────────────────────────── */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-22px) rotate(4deg); }
+  66%       { transform: translateY(10px) rotate(-3deg); }
+}
+
+@keyframes float-medium {
+  0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+  50%       { transform: translateY(-16px) rotate(6deg) scale(1.04); }
+}
+
+@keyframes float-fast {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25%       { transform: translateY(-12px) rotate(-8deg); }
+  75%       { transform: translateY(8px) rotate(5deg); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes spin-slow-reverse {
+  from { transform: rotate(360deg); }
+  to   { transform: rotate(0deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; filter: blur(40px); }
+  50%       { opacity: 0.7; filter: blur(50px); }
+}
+
+@keyframes shimmer-card {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.float-slow   { animation: float-slow   7s ease-in-out infinite; }
+.float-medium { animation: float-medium 5s ease-in-out infinite; }
+.float-fast   { animation: float-fast   3.5s ease-in-out infinite; }
+.spin-slow    { animation: spin-slow    14s linear infinite; }
+.spin-slow-reverse { animation: spin-slow-reverse 18s linear infinite; }
+.pulse-glow   { animation: pulse-glow   4s ease-in-out infinite; }
+
+/* ─── 3D shape wireframe ─────────────────────────────────────── */
+@keyframes morph-blob {
+  0%, 100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  25% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+  50% {
+    border-radius: 50% 60% 30% 60% / 30% 40% 70% 60%;
+  }
+  75% {
+    border-radius: 70% 30% 50% 60% / 60% 70% 40% 30%;
+  }
+}
+
+.morph-blob {
+  animation: morph-blob 9s ease-in-out infinite;
+}
+
+/* ─── Wave background animation ──────────────────────────────── */
+@keyframes wave-drift {
+  0%   { transform: translateX(0) scaleY(1); }
+  50%  { transform: translateX(12px) scaleY(1.018); }
+  100% { transform: translateX(0) scaleY(1); }
+}
+
+@keyframes wave-drift-slow {
+  0%   { transform: translateX(0) scaleY(1); }
+  50%  { transform: translateX(-18px) scaleY(0.985); }
+  100% { transform: translateX(0) scaleY(1); }
+}
+
+.wave-line-1 { animation: wave-drift      9s ease-in-out infinite; }
+.wave-line-2 { animation: wave-drift-slow 11s ease-in-out infinite; }
+.wave-line-3 { animation: wave-drift      13s ease-in-out infinite reverse; }
+.wave-line-4 { animation: wave-drift-slow 15s ease-in-out infinite reverse; }
+.wave-line-5 { animation: wave-drift      8s ease-in-out infinite 1s; }
+.wave-line-6 { animation: wave-drift-slow 12s ease-in-out infinite 2s; }
+.wave-line-7 { animation: wave-drift      10s ease-in-out infinite 3s; }
+
+/* ─── Counter number animation ──────────────────────────────── */
+@keyframes count-up-flash {
+  0%   { opacity: 0.3; transform: translateY(6px); }
+  100% { opacity: 1;   transform: translateY(0); }
+}
+
+.counter-animate {
+  animation: count-up-flash 0.4s ease-out forwards;
+}
+

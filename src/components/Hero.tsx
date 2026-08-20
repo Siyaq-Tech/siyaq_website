@@ -1,161 +1,156 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { staggerContainer, fadeInUp } from '../lib/animations';
 
-/* ── Animated dot-grid canvas ─────────────────────────────────── */
-interface Dot {
-  x: number;
-  y: number;
-  originX: number;
-  originY: number;
-  radius: number;
-  alpha: number;
-  vx: number;
-  vy: number;
-}
-
-const DOT_SPACING = 36;
-const INFLUENCE_RADIUS = 140;
-const REPEL_STRENGTH = 0.22;
-const SPRING = 0.08;
-const FRICTION = 0.82;
-
-const DotCanvas: React.FC = () => {
+/* ── Animated Wavy Tech Background ────────────────────────────── */
+const WavyTechBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const dotsRef = useRef<Dot[]>([]);
-  const mouseRef = useRef({ x: -9999, y: -9999, inside: false });
-  const rafRef = useRef<number>(0);
 
-  /* Build dot grid */
-  const buildGrid = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const cols = Math.ceil(canvas.width / DOT_SPACING) + 1;
-    const rows = Math.ceil(canvas.height / DOT_SPACING) + 1;
-    const dots: Dot[] = [];
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        const ox = c * DOT_SPACING;
-        const oy = r * DOT_SPACING;
-        dots.push({
-          x: ox, y: oy,
-          originX: ox, originY: oy,
-          radius: 0,
-          alpha: 0,
-          vx: 0, vy: 0,
-        });
-      }
-    }
-    dotsRef.current = dots;
-  }, []);
-
-  /* Resize handler */
-  const handleResize = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-    buildGrid();
-  }, [buildGrid]);
-
-  /* Animation loop */
-  const animate = useCallback(() => {
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let animationFrameId: number;
+    let time = 0;
 
-    const { x: mx, y: my, inside } = mouseRef.current;
+    const handleResize = () => {
+      if (!canvas.parentElement) return;
+      canvas.width = canvas.parentElement.offsetWidth;
+      canvas.height = canvas.parentElement.offsetHeight;
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
 
-    for (const dot of dotsRef.current) {
-      if (inside) {
-        const dx = dot.x - mx;
-        const dy = dot.y - my;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+    const draw = () => {
+      time += 0.001; // Slower, elegant movement like Jet
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        if (dist < INFLUENCE_RADIUS) {
-          // Dot is within cursor influence — push it away and make it visible
-          const t = 1 - dist / INFLUENCE_RADIUS;
-          const force = t * REPEL_STRENGTH;
-          const angle = Math.atan2(dy, dx);
-          dot.vx += Math.cos(angle) * force * 18;
-          dot.vy += Math.sin(angle) * force * 18;
-          // Target alpha & radius based on proximity
-          const targetAlpha = 0.12 + t * 0.45;
-          const targetRadius = 1.5 + t * 3;
-          dot.alpha += (targetAlpha - dot.alpha) * 0.15;
-          dot.radius += (targetRadius - dot.radius) * 0.15;
-        } else {
-          // Outside influence but mouse is inside section — fade to a dim resting state
-          dot.alpha += (0 - dot.alpha) * 0.08;
-          dot.radius += (0 - dot.radius) * 0.08;
+      const lines = 35; // More lines for a denser, detailed topographic look
+      
+      for (let i = 0; i < lines; i++) {
+        ctx.beginPath();
+        
+        const progress = i / lines;
+        // Base y position for the line, covering vertical space smoothly
+        const yBase = (canvas.height * 0.15) + (progress * canvas.height * 0.7);
+        
+        for (let x = 0; x <= canvas.width; x += 10) {
+          // Complex organic curves using multiple sine waves
+          const wave1 = Math.sin(x * 0.002 + time + i * 0.1) * 70;
+          const wave2 = Math.sin(x * 0.003 - time * 0.8 + i * 0.05) * 45;
+          const wave3 = Math.sin(x * 0.001 + time * 1.5) * 90;
+          
+          // Perspective effect (lines get flatter towards edges)
+          const perspectiveModifier = Math.sin(progress * Math.PI);
+          
+          const y = yBase + (wave1 + wave2 + wave3) * perspectiveModifier;
+          
+          if (x === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
         }
-      } else {
-        // Mouse has left the section — fade everything back to invisible
-        dot.alpha += (0 - dot.alpha) * 0.06;
-        dot.radius += (0 - dot.radius) * 0.06;
+        
+        // Gradient that fades nicely on the edges, clearer and sharper
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+        gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        
+        // Much clearer opacity, maxing out at 0.15 in the center
+        const maxOpacity = 0.04 + (Math.sin(progress * Math.PI) * 0.12);
+        gradient.addColorStop(0.5, `rgba(0, 0, 0, ${maxOpacity})`);
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = 1.5; // Clearer lines
+        ctx.stroke();
       }
+      
+      animationFrameId = requestAnimationFrame(draw);
+    };
 
-      /* Spring back to origin */
-      dot.vx += (dot.originX - dot.x) * SPRING;
-      dot.vy += (dot.originY - dot.y) * SPRING;
-      dot.vx *= FRICTION;
-      dot.vy *= FRICTION;
-      dot.x += dot.vx;
-      dot.y += dot.vy;
-
-      ctx.beginPath();
-      ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(0,0,0,${dot.alpha})`;
-      ctx.fill();
-    }
-
-    rafRef.current = requestAnimationFrame(animate);
-  }, []);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    /* Initial size */
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-    buildGrid();
-    rafRef.current = requestAnimationFrame(animate);
-
-    const ro = new ResizeObserver(handleResize);
-    ro.observe(canvas);
+    draw();
 
     return () => {
-      cancelAnimationFrame(rafRef.current);
-      ro.disconnect();
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
     };
-  }, [buildGrid, animate, handleResize]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const rect = canvasRef.current!.getBoundingClientRect();
-    mouseRef.current = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-      inside: true,
-    };
-  };
-
-  const handleMouseLeave = () => {
-    mouseRef.current = { x: -9999, y: -9999, inside: false };
-  };
+  }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="absolute inset-0 w-full h-full"
-      style={{ zIndex: 0, pointerEvents: 'all' }}
-    />
+    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden" style={{ background: 'radial-gradient(circle at 50% 50%, #ffffff 0%, #f9f9f9 100%)' }}>
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full opacity-100 mix-blend-multiply" />
+      {/* Light gradient overlay to mask the bottom and top edges smoothly */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#fdfdfd]/40 via-transparent to-[#F9F9F9]"></div>
+    </div>
+  );
+};
+
+/* ── Animated Counter ─────────────────────────────────────────── */
+interface CounterProps {
+  value: string;  /* e.g. "5+", "2", "100%" */
+  label: string;
+}
+
+const CounterStat: React.FC<CounterProps> = ({ value, label }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [display, setDisplay] = useState('0');
+  const [triggered, setTriggered] = useState(false);
+
+  /* Parse: extract number & suffix ("5+" → { num: 5, suffix: "+" }) */
+  const match = value.match(/^(\d+)(.*)$/);
+  const targetNum = match ? parseInt(match[1], 10) : 0;
+  const suffix    = match ? match[2] : value;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || triggered) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setTriggered(true);
+        observer.disconnect();
+
+        /* Ease-out counting animation */
+        const duration = 2500;         // ms
+        const start    = performance.now();
+
+        const tick = (now: number) => {
+          const elapsed  = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          /* Ease-out cubic */
+          const eased    = 1 - Math.pow(1 - progress, 3);
+          const current  = Math.round(eased * targetNum);
+          setDisplay(current === targetNum ? value : String(current) + suffix);
+          if (progress < 1) requestAnimationFrame(tick);
+        };
+
+        requestAnimationFrame(tick);
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [targetNum, suffix, triggered, value]);
+
+  return (
+    <div ref={ref} className="text-center py-8 border-t border-b border-gray-200">
+      <div
+        key={display}
+        className="text-3xl md:text-4xl font-medium text-black mb-2 counter-animate tabular-nums"
+      >
+        {display}
+      </div>
+      <div className="text-xs text-gray-500 font-medium uppercase tracking-widest">
+        {label}
+      </div>
+    </div>
   );
 };
 
@@ -169,11 +164,11 @@ const Hero: React.FC = () => {
       dir={isRTL ? 'rtl' : 'ltr'}
       className="relative min-h-screen flex items-center bg-[#F9F9F9] overflow-hidden pt-20"
     >
-      {/* Animated dot-grid background */}
-      <DotCanvas />
+      {/* Tech wavy background */}
+      <WavyTechBackground />
 
-      {/* Content sits above canvas */}
-      <motion.div 
+      {/* Content sits above */}
+      <motion.div
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
@@ -189,17 +184,26 @@ const Hero: React.FC = () => {
           </motion.div>
 
           {/* Headline */}
-          <motion.h1 variants={fadeInUp} className="text-4xl sm:text-5xl md:text-6xl lg:text-[5rem] font-serif font-medium text-black leading-[1.1] mb-6">
+          <motion.h1
+            variants={fadeInUp}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-[5rem] font-serif font-medium text-black leading-[1.1] mb-6"
+          >
             {t.hero.title}
           </motion.h1>
 
           {/* Subtitle */}
-          <motion.p variants={fadeInUp} className="text-base md:text-lg text-gray-500 leading-relaxed max-w-2xl mx-auto mb-12">
+          <motion.p
+            variants={fadeInUp}
+            className="text-base md:text-lg text-gray-500 leading-relaxed max-w-2xl mx-auto mb-12"
+          >
             {t.hero.subtitle}
           </motion.p>
 
-          {/* CTAs — re-enable pointer events for links */}
-          <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-center justify-center gap-4 pointer-events-auto">
+          {/* CTAs */}
+          <motion.div
+            variants={fadeInUp}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 pointer-events-auto"
+          >
             <a
               href="#contact"
               className="w-full sm:w-auto px-10 py-4 bg-black text-white text-sm font-medium hover:bg-gray-900 transition-colors text-center"
@@ -215,22 +219,20 @@ const Hero: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Stats */}
-        <motion.div variants={staggerContainer} className="max-w-5xl mx-auto mt-24 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            { value: t.hero.stat1Value, label: t.hero.stat1Label },
-            { value: t.hero.stat2Value, label: t.hero.stat2Label },
-            { value: t.hero.stat3Value, label: t.hero.stat3Label },
-          ].map((stat, i) => (
-            <motion.div variants={fadeInUp} key={i} className="text-center py-8 border-t border-b border-gray-200">
-              <div className="text-3xl md:text-4xl font-medium text-black mb-2">
-                {stat.value}
-              </div>
-              <div className="text-xs text-gray-500 font-medium uppercase tracking-widest">
-                {stat.label}
-              </div>
-            </motion.div>
-          ))}
+        {/* Stats — animated counters */}
+        <motion.div
+          variants={staggerContainer}
+          className="max-w-5xl mx-auto mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 pointer-events-auto"
+        >
+          <motion.div variants={fadeInUp}>
+            <CounterStat value={t.hero.stat1Value} label={t.hero.stat1Label} />
+          </motion.div>
+          <motion.div variants={fadeInUp}>
+            <CounterStat value={t.hero.stat2Value} label={t.hero.stat2Label} />
+          </motion.div>
+          <motion.div variants={fadeInUp}>
+            <CounterStat value={t.hero.stat3Value} label={t.hero.stat3Label} />
+          </motion.div>
         </motion.div>
       </motion.div>
     </section>

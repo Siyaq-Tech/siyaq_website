@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import Marquee from './components/Marquee';
 import Services from './components/Services';
 import Process from './components/Process';
 import CaseStudies from './components/CaseStudies';
@@ -26,7 +27,11 @@ const AppContent: React.FC = () => {
       <Navbar onToggleLang={toggleLang} />
       <main>
         <Hero />
+        {/* Dark marquee immediately after hero — creates strong visual break */}
+        <Marquee variant="dark" />
         <Services />
+        {/* Light marquee after services — reinforces tech stack */}
+        <Marquee variant="light" />
         <Process />
         <CaseStudies />
         <Technologies />

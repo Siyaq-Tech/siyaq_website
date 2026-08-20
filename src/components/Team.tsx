@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { useLanguage } from '../context/LanguageContext';
 import { staggerContainer, fadeInUp } from '../lib/animations';
 
-/* ── Member data (static, no need in i18n since names are fixed) ── */
+/* ── Member data ────────────────────────────────────────────────── */
 interface TeamMember {
   id: string;
   nameAr: string;
@@ -15,6 +15,8 @@ interface TeamMember {
   initials: string;
   github: string;
   linkedin: string;
+  /** accent color for the front card gradient */
+  accent: string;
 }
 
 const members: TeamMember[] = [
@@ -28,6 +30,7 @@ const members: TeamMember[] = [
     initials: 'KH',
     github: 'https://github.com',
     linkedin: 'https://linkedin.com',
+    accent: '#e8e8e8',
   },
   {
     id: 'heba',
@@ -39,6 +42,7 @@ const members: TeamMember[] = [
     initials: 'HE',
     github: 'https://github.com',
     linkedin: 'https://linkedin.com',
+    accent: '#ececec',
   },
   {
     id: 'angelo',
@@ -50,6 +54,7 @@ const members: TeamMember[] = [
     initials: 'AE',
     github: 'https://github.com/AngeloEsam',
     linkedin: 'https://www.linkedin.com/in/angelo-esam/',
+    accent: '#e4e4e4',
   },
   {
     id: 'abdelrahman',
@@ -61,6 +66,7 @@ const members: TeamMember[] = [
     initials: 'AA',
     github: 'https://github.com',
     linkedin: 'https://linkedin.com',
+    accent: '#e0e0e0',
   },
   {
     id: 'ahmed',
@@ -72,6 +78,7 @@ const members: TeamMember[] = [
     initials: 'AR',
     github: 'https://github.com',
     linkedin: 'https://linkedin.com',
+    accent: '#e8e8e8',
   },
   {
     id: 'mohamedtarek',
@@ -83,6 +90,7 @@ const members: TeamMember[] = [
     initials: 'MT',
     github: 'https://github.com',
     linkedin: 'https://linkedin.com',
+    accent: '#dcdcdc',
   },
   {
     id: 'mohamedosama',
@@ -94,6 +102,7 @@ const members: TeamMember[] = [
     initials: 'MO',
     github: 'https://github.com',
     linkedin: 'https://linkedin.com',
+    accent: '#e8e8e8',
   },
   {
     id: 'rehamhamdy',
@@ -102,98 +111,179 @@ const members: TeamMember[] = [
     roleAr: 'قائد الفريق',
     roleEn: 'Team Leader',
     avatar: '/avatar_heba.png',
-    initials: 'MO',
+    initials: 'RH',
     github: 'https://github.com',
     linkedin: 'https://linkedin.com',
+    accent: '#d8d8d8',
   },
 ];
 
-/* ── Drop-shaped avatar card ────────────────────────────────────── */
+/* ── 3D Flip Card ──────────────────────────────────────────────── */
 const MemberCard: React.FC<{ member: TeamMember; isRTL: boolean }> = ({
   member,
   isRTL,
 }) => {
-  const [hovered, setHovered] = useState(false);
   const name = isRTL ? member.nameAr : member.nameEn;
   const role = isRTL ? member.roleAr : member.roleEn;
 
   return (
-    <div
-      className="flex flex-col items-center group cursor-default"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {/* Drop / Blob shape */}
-      <div
-        className="relative overflow-hidden transition-transform duration-500 ease-out rounded-full"
-        style={{
-          width: 180,
-          height: 180,
-          transform: hovered ? 'translateY(-8px) scale(1.04)' : 'translateY(0) scale(1)',
-        }}
-      >
-        {/* Avatar image or initials fallback */}
-        {member.avatar ? (
-          <img
-            src={member.avatar}
-            alt={name}
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-44 object-cover object-top select-none"
-            style={{ height: 175 }}
-            draggable={false}
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-end justify-center pb-4">
-            <div
-              className="w-28 h-28 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg"
-            >
-              {member.initials}
-            </div>
-          </div>
-        )}
+    /* Scene — gives perspective depth */
+    <div className="card-3d-scene" style={{ width: 200, height: 260 }}>
+      <div className="card-3d-inner" style={{ borderRadius: 16 }}>
 
-        {/* Hover shimmer overlay */}
+        {/* ── FRONT ─────────────────────────────────────────────── */}
         <div
-          className="absolute inset-0 transition-opacity duration-500"
+          className="card-3d-front flex flex-col items-center justify-end pb-6 overflow-hidden"
           style={{
-            background:
-              'linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%)',
-            opacity: hovered ? 1 : 0,
+            borderRadius: 16,
+            background: `linear-gradient(160deg, ${member.accent} 0%, #f4f4f4 60%, #ffffff 100%)`,
+            border: '1px solid rgba(0,0,0,0.07)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
           }}
-        />
-      </div>
-
-      {/* Info */}
-      <div className="mt-4 text-center">
-        <h3
-          className="text-base font-semibold text-black transition-colors duration-300"
         >
-          {name}
-        </h3>
-        <p className="text-xs text-gray-400 mt-0.5 font-medium">{role}</p>
-        
-        {/* Social Icons */}
-        <div className="flex justify-center items-center gap-3 mt-3">
-          <a
-            href={member.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-400 hover:text-black transition-colors"
+
+
+          {/* Avatar */}
+          <div
+            className="relative mb-3 rounded-full overflow-hidden"
+            style={{
+              width: 100,
+              height: 100,
+              border: '3px solid rgba(0,0,0,0.1)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
+              background: '#e8e8e8',
+              zIndex: 1,
+            }}
           >
-            <FaGithub size={18} />
-          </a>
-          <a
-            href={member.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-400 hover:text-[#0a66c2] transition-colors"
+            {member.avatar ? (
+              <img
+                src={member.avatar}
+                alt={name}
+                className="w-full h-full object-cover object-top select-none"
+                draggable={false}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-black/50">
+                {member.initials}
+              </div>
+            )}
+          </div>
+
+          <h3 className="text-sm font-semibold text-black text-center px-3 leading-tight">
+            {name}
+          </h3>
+          <p className="text-xs text-black/40 mt-1 font-medium text-center px-3">
+            {role}
+          </p>
+        </div>
+
+        {/* ── BACK ──────────────────────────────────────────────── */}
+        <div
+          className="card-3d-back flex flex-col items-center justify-center gap-5 overflow-hidden"
+          style={{
+            borderRadius: 16,
+            background: 'linear-gradient(160deg, #111 0%, #222 100%)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+          }}
+        >
+          {/* Shimmer line */}
+          <div
+            className="absolute inset-x-0 top-0 h-px"
+            style={{
+              background:
+                'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)',
+            }}
+          />
+
+          {/* Initials circle */}
+          <div
+            className="rounded-full flex items-center justify-center text-2xl font-bold text-white"
+            style={{
+              width: 72,
+              height: 72,
+              background: 'rgba(255,255,255,0.06)',
+              border: '1.5px solid rgba(255,255,255,0.15)',
+              boxShadow: '0 0 24px rgba(255,255,255,0.05)',
+            }}
           >
-            <FaLinkedin size={18} />
-          </a>
+            {member.initials}
+          </div>
+
+          {/* Name + role */}
+          <div className="text-center px-4">
+            <p className="text-white text-sm font-semibold leading-tight">{name}</p>
+            <p className="text-white/40 text-xs mt-1 font-medium">{role}</p>
+          </div>
+
+          {/* Social links */}
+          <div className="flex items-center gap-4">
+            <a
+              href={member.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-white/8 border border-white/10 text-white/60 hover:text-white hover:bg-white/15 transition-colors"
+              style={{ background: 'rgba(255,255,255,0.06)' }}
+            >
+              <FaGithub size={16} />
+            </a>
+            <a
+              href={member.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/15 transition-colors"
+              style={{
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.1)',
+              }}
+            >
+              <FaLinkedin size={16} />
+            </a>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
+/* ── Creative Section Background ───────────────────────────────── */
+const TeamBackground: React.FC = () => (
+  <div className="pointer-events-none absolute inset-0 overflow-hidden bg-[#F9F9F9]">
+    {/* Animated soft blurred shapes for a premium, clean look */}
+    <div
+      className="absolute rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-pulse"
+      style={{
+        width: '40vw',
+        height: '40vw',
+        top: '-10%',
+        right: '-10%',
+        background: 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)',
+        animationDuration: '8s'
+      }}
+    />
+    <div
+      className="absolute rounded-full mix-blend-multiply filter blur-[120px] opacity-30 animate-pulse"
+      style={{
+        width: '50vw',
+        height: '50vw',
+        bottom: '-15%',
+        left: '-15%',
+        background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
+        animationDuration: '10s',
+        animationDelay: '2s'
+      }}
+    />
+    {/* Subtle Dot Grid Overlay for a tech feel */}
+    <div 
+      className="absolute inset-0 opacity-[0.03]"
+      style={{ 
+        backgroundImage: 'radial-gradient(#000 1px, transparent 1px)',
+        backgroundSize: '24px 24px'
+      }}
+    />
+    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#F9F9F9]/50 to-[#F9F9F9]"></div>
+  </div>
+);
 
 /* ── Section ────────────────────────────────────────────────────── */
 const Team: React.FC = () => {
@@ -213,41 +303,42 @@ const Team: React.FC = () => {
       dir={isRTL ? 'rtl' : 'ltr'}
       className="py-24 md:py-32 bg-[#F9F9F9] relative overflow-hidden"
     >
-      {/* Decorative blobs */}
-      <div
-        className="pointer-events-none absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-10 blur-3xl"
-        style={{ background: 'linear-gradient(135deg, #a8e6f0, #c8f4e8)' }}
-      />
-      <div
-        className="pointer-events-none absolute -bottom-32 -right-32 w-96 h-96 rounded-full opacity-10 blur-3xl"
-        style={{ background: 'linear-gradient(135deg, #fde8c0, #fbcfe8)' }}
-      />
+      {/* Creative background */}
+      <TeamBackground />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
-        <motion.div 
+        <motion.div
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: '-100px' }}
           className={`mb-16 ${isRTL ? 'text-right' : 'text-left'}`}
         >
-          <motion.span variants={fadeInUp} className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">
+          <motion.span
+            variants={fadeInUp}
+            className="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4"
+          >
             {sectionBadge}
           </motion.span>
-          <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-medium text-black mb-4 leading-tight">
+          <motion.h2
+            variants={fadeInUp}
+            className="text-3xl md:text-4xl font-medium text-black mb-4 leading-tight"
+          >
             {sectionTitle}
           </motion.h2>
-          <motion.p variants={fadeInUp} className="text-gray-500 text-base max-w-xl">{sectionSubtitle}</motion.p>
+          <motion.p variants={fadeInUp} className="text-gray-500 text-base max-w-xl">
+            {sectionSubtitle}
+          </motion.p>
         </motion.div>
 
-        {/* Cards grid */}
-        <motion.div 
+        {/* Flip cards grid */}
+        <motion.div
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-12 justify-items-center"
+          viewport={{ once: true, margin: '-50px' }}
+          className="flex flex-wrap justify-center gap-8"
         >
           {members.map((m) => (
             <motion.div variants={fadeInUp} key={m.id}>
