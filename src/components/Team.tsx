@@ -76,8 +76,8 @@ const members: TeamMember[] = [
     roleEn: 'Backend Developer',
     avatar: '/avatar_ahmed.png',
     initials: 'AR',
-    github: 'https://github.com',
-    linkedin: 'https://linkedin.com',
+    github: 'https://github.com/',
+    linkedin: 'https://www.linkedin.com/in/ahmed-ramadan-b952021a3/',
     accent: '#e8e8e8',
   },
   {
