@@ -38,15 +38,29 @@ const Services: React.FC = () => {
             <motion.div
               variants={fadeInUp}
               key={index}
-              className="p-8 bg-white border border-gray-200 hover:border-black transition-colors duration-300 group"
+              className="relative group p-[1px] overflow-hidden"
             >
-              <div className="w-10 h-10 mb-6 bg-gray-50 border border-gray-100 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
-                <span className="text-sm font-medium">{String(index + 1).padStart(2, '0')}</span>
+              {/* Default Border (static) */}
+              <div className="absolute inset-0 border border-gray-200 group-hover:opacity-0 transition-opacity duration-300" />
+              
+              {/* Animated Spinning Border Layer */}
+              <div className="absolute inset-[-150%] opacity-0 group-hover:opacity-100 transition-opacity duration-500 overflow-hidden pointer-events-none">
+                 <div 
+                   className="w-full h-full animate-[spin_4s_linear_infinite]" 
+                   style={{ background: 'conic-gradient(from 90deg at 50% 50%, #ffffff 0%, #000000 50%, #ffffff 100%)' }} 
+                 />
               </div>
-              <h3 className="text-xl font-medium text-black mb-3">
-                {service.title}
-              </h3>
-              <p className="text-gray-500 text-sm leading-relaxed">{service.description}</p>
+
+              {/* Card Content (covers the center) */}
+              <div className="relative z-10 h-full p-8 bg-white">
+                <div className="w-10 h-10 mb-6 bg-gray-50 border border-gray-100 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors duration-500">
+                  <span className="text-sm font-medium">{String(index + 1).padStart(2, '0')}</span>
+                </div>
+                <h3 className="text-xl font-medium text-black mb-3">
+                  {service.title}
+                </h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{service.description}</p>
+              </div>
             </motion.div>
           ))}
         </motion.div>

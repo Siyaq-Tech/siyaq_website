@@ -13,6 +13,7 @@ import CTA from './components/CTA';
 import Contact from './components/Contact';
 import Blog from './components/Blog';
 import Footer from './components/Footer';
+import { QuoteDivider } from './components/QuoteDivider';
 
 const AppContent: React.FC = () => {
   const { lang, isRTL, toggleLang } = useLanguage();
@@ -30,8 +31,8 @@ const AppContent: React.FC = () => {
         {/* Dark marquee immediately after hero — creates strong visual break */}
         <Marquee variant="dark" />
         <Services />
-        {/* Light marquee after services — reinforces tech stack */}
-        <Marquee variant="light" />
+        {/* Elegant Quote Divider instead of a second marquee */}
+        <QuoteDivider />
         <Process />
         <CaseStudies />
         <Technologies />

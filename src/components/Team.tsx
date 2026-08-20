@@ -29,7 +29,7 @@ const members: TeamMember[] = [
     avatar: '/avatar_karim.png',
     initials: 'KH',
     github: 'https://github.com',
-    linkedin: 'https://linkedin.com',
+    linkedin: 'https://www.linkedin.com/in/kareemhazemm/',
     accent: '#e8e8e8',
   },
   {
@@ -40,8 +40,8 @@ const members: TeamMember[] = [
     roleEn: 'Frontend Developer',
     avatar: '/avatar_heba.png',
     initials: 'HE',
-    github: 'https://github.com',
-    linkedin: 'https://linkedin.com',
+    github: 'https://github.com/hiba-siyaq',
+    linkedin: 'https://www.linkedin.com/in/heba-eissa-4799bb220/',
     accent: '#ececec',
   },
   {
@@ -64,8 +64,8 @@ const members: TeamMember[] = [
     roleEn: 'Backend Developer',
     avatar: '/avatar_abdelrahman.png',
     initials: 'AA',
-    github: 'https://github.com',
-    linkedin: 'https://linkedin.com',
+    github: 'https://github.com/init0x1',
+    linkedin: 'https://www.linkedin.com/in/abdulrahman-aly/',
     accent: '#e0e0e0',
   },
   {
@@ -88,8 +88,8 @@ const members: TeamMember[] = [
     roleEn: 'Solution Architect',
     avatar: '/avatar_mohammed.png',
     initials: 'MT',
-    github: 'https://github.com',
-    linkedin: 'https://linkedin.com',
+    github: 'https://github.com/mohammedtarek245',
+    linkedin: 'www.linkedin.com/in/mohammed-tarek-67b822254',
     accent: '#dcdcdc',
   },
   {
@@ -100,8 +100,8 @@ const members: TeamMember[] = [
     roleEn: 'Media Buyer',
     avatar: '/avatar_mohamed.png',
     initials: 'MO',
-    github: 'https://github.com',
-    linkedin: 'https://linkedin.com',
+    github: 'https://github.com/mohamedusamasmm-pixel',
+    linkedin: 'www.linkedin.com/in/mohamed-usama-mediabuying',
     accent: '#e8e8e8',
   },
   {
@@ -113,7 +113,7 @@ const members: TeamMember[] = [
     avatar: '/avatar_heba.png',
     initials: 'RH',
     github: 'https://github.com',
-    linkedin: 'https://linkedin.com',
+    linkedin: 'https://www.linkedin.com/in/riham-hamdi-b2b016257/',
     accent: '#d8d8d8',
   },
 ];
